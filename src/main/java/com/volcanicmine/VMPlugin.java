@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package net.runelite.client.plugins.volcanicmine;
+package com.volcanicmine;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
