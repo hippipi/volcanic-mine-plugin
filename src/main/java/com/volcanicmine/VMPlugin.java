@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.volcanicmine;
+package net.runelite.client.plugins.volcanicmine;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
@@ -193,10 +193,10 @@ public class VMPlugin extends Plugin
         if (config.showPlatformWarning() && event.getGameObject().getId() == PLATFORM_STAGE_3_ID)
         {
             // Fetch coordinates of player and game object
-            int playerX = client.getLocalPlayer().getLocalLocation().getX() - 1;
-            int playerY = client.getLocalPlayer().getLocalLocation().getY() - 1;
-            int objectX = event.getTile().getLocalLocation().getX();
-            int objectY = event.getTile().getLocalLocation().getY();
+            int playerX = client.getLocalPlayer().getWorldLocation().getX();
+            int playerY = client.getLocalPlayer().getWorldLocation().getY();
+            int objectX = event.getGameObject().getWorldLocation().getX();
+            int objectY = event.getGameObject().getWorldLocation().getY();
 
             // Notify player if the stage 3 platform is beneath them
             if (playerX == objectX && playerY == objectY)
