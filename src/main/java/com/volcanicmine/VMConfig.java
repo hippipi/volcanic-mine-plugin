@@ -22,7 +22,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.volcanicmine;
 
 import net.runelite.client.config.*;
@@ -32,8 +31,8 @@ public interface VMConfig extends Config
 {
 	@ConfigItem(
 			keyName = "ventWarning",
-			name = "Vent Shift Warning",
-			description = "Show warning for when vents shift 5 minutes into game",
+			name = "Vent Shift Notification",
+			description = "Show warning in advance of vents resetting 5 minutes into game",
 			position = 0
 	)
 	default boolean showVentWarning()
@@ -44,7 +43,7 @@ public interface VMConfig extends Config
 	@ConfigItem(
 			keyName = "ventWarningTime",
 			name = "Vent Shift Warning Time",
-			description = "Seconds before vents shift when warning notification is shown",
+			description = "Number of seconds before the vents reset",
 			position = 1
 	)
 	@Range(
@@ -59,8 +58,8 @@ public interface VMConfig extends Config
 
 	@ConfigItem(
 			keyName = "eruptionWarning",
-			name = "Eruption Warning",
-			description = "Show warning for when the volcano is going to erupt",
+			name = "Eruption Notification",
+			description = "Show warning in advance of the volcano erupting",
 			position = 2
 	)
 	default boolean showEruptionWarning()
@@ -71,7 +70,7 @@ public interface VMConfig extends Config
 	@ConfigItem(
 			keyName = "eruptionWarningTime",
 			name = "Eruption Warning Time",
-			description = "Seconds before eruption when warning notification is shown",
+			description = "Number of seconds before the volcano erupts",
 			position = 3
 	)
 	@Range(
@@ -86,12 +85,23 @@ public interface VMConfig extends Config
 
 	@ConfigItem(
 			keyName = "platformWarning",
-			name = "Platform Warning",
+			name = "Platform Despawn Notification",
 			description = "Show warning for when platform below you is about to disappear",
 			position = 4
 	)
 	default boolean showPlatformWarning()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+			keyName = "boulderMovement",
+			name = "Boulder Movement Notification",
+			description = "Notify when current boulder stage is complete",
+			position = 5
+	)
+	default boolean showBoulderWarning()
+	{
+		return false;
 	}
 }

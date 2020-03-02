@@ -31,11 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.NPC;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
+import net.runelite.api.events.*;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -58,8 +56,14 @@ public class VMPlugin extends Plugin
     // Chat messages
     private static final String CHAT_VM_START = "The volcano awakens! You can now access the area below...";
     private static final String PLATFORM_WARNING_MESSAGE = "The platform beneath you will disappear soon!";
+    private static final String BOULDER_WARNING_MESSAGE = "The current boulder stage is complete.";
     // Constants
     private static final int PLATFORM_STAGE_3_ID = 31000;
+    private static final int BOULDER_BREAK_STAGE_1_ID = 7807;
+    private static final int BOULDER_BREAK_STAGE_2_ID = 7809;
+    private static final int BOULDER_BREAK_STAGE_3_ID = 7811;
+    private static final int BOULDER_BREAK_STAGE_4_ID = 7813;
+    private static final int BOULDER_BREAK_STAGE_5_ID = 7815;
     private static final int VM_REGION_NORTH = 15263;
     private static final int VM_REGION_SOUTH = 15262;
     private static final Duration VM_FULL_TIME = Duration.ofMinutes(10);
@@ -202,6 +206,36 @@ public class VMPlugin extends Plugin
             if (playerX == objectX && playerY == objectY)
             {
                 notifier.notify(PLATFORM_WARNING_MESSAGE);
+            }
+        }
+    }
+
+
+    @Subscribe
+    public void onNpcSpawned(NpcSpawned npcSpawned)
+    {
+        // Return if not in VM
+        if (!isInVM())
+        {
+            return;
+        }
+
+        // If warning is enabled and npc spawned is a boulder that is breaking
+        if (config.showBoulderWarning())
+        {
+            NPC npc = npcSpawned.getNpc();
+
+            switch(npc.getId())
+            {
+                case BOULDER_BREAK_STAGE_1_ID:
+                case BOULDER_BREAK_STAGE_2_ID:
+                case BOULDER_BREAK_STAGE_3_ID:
+                case BOULDER_BREAK_STAGE_4_ID:
+                case BOULDER_BREAK_STAGE_5_ID:
+                    notifier.notify(BOULDER_WARNING_MESSAGE);
+                    break;
+                default:
+                    break;
             }
         }
     }
