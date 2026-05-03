@@ -25,13 +25,18 @@
 
 package com.volcanicmine;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Provides;
+import java.util.List;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
+import net.runelite.api.Player;
+import net.runelite.api.gameval.NpcID;
+import net.runelite.api.gameval.ObjectID;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.client.Notifier;
@@ -58,14 +63,15 @@ public class VMPlugin extends Plugin
     private static final String PLATFORM_WARNING_MESSAGE = "The platform beneath you will disappear soon!";
     private static final String BOULDER_WARNING_MESSAGE = "The current boulder stage is complete.";
     // Constants
-    private static final int PLATFORM_STAGE_3_ID = 31000;
-    private static final int BOULDER_BREAK_STAGE_1_ID = 7807;
-    private static final int BOULDER_BREAK_STAGE_2_ID = 7809;
-    private static final int BOULDER_BREAK_STAGE_3_ID = 7811;
-    private static final int BOULDER_BREAK_STAGE_4_ID = 7813;
-    private static final int BOULDER_BREAK_STAGE_5_ID = 7815;
+    private static final int PLATFORM_STAGE_3_ID = ObjectID.FOSSIL_VOLCANO_STEPPING_2;
+    private static final int BOULDER_BREAK_STAGE_1_ID = NpcID.FOSSIL_MINING_BOULDER_ATTACHED_BREAKING;
+    private static final int BOULDER_BREAK_STAGE_2_ID = NpcID.FOSSIL_MINING_BOULDER_GIANT_BREAKING;
+    private static final int BOULDER_BREAK_STAGE_3_ID = NpcID.FOSSIL_MINING_BOULDER_LARGE_BREAKING;
+    private static final int BOULDER_BREAK_STAGE_4_ID = NpcID.FOSSIL_MINING_BOULDER_MEDIUM_BREAKING;
+    private static final int BOULDER_BREAK_STAGE_5_ID = NpcID.FOSSIL_MINING_BOULDER_SMALL_BREAKING;
     private static final int VM_REGION_NORTH = 15263;
     private static final int VM_REGION_SOUTH = 15262;
+	private static final List<Integer> VM_REGIONS = ImmutableList.of(VM_REGION_NORTH, VM_REGION_SOUTH);
     private static final Duration VM_FULL_TIME = Duration.ofMinutes(10);
     private static final Duration VM_HALF_TIME = Duration.ofMinutes(5);
 
@@ -196,9 +202,14 @@ public class VMPlugin extends Plugin
         // If warning is enabled and game object spawned is a stage 3 platform
         if (config.showPlatformWarning() && event.getGameObject().getId() == PLATFORM_STAGE_3_ID)
         {
+			final Player player = client.getLocalPlayer();
+			if (player == null)
+			{
+				return;
+			}
             // Fetch coordinates of player and game object
-            int playerX = client.getLocalPlayer().getWorldLocation().getX();
-            int playerY = client.getLocalPlayer().getWorldLocation().getY();
+            int playerX = player.getWorldLocation().getX();
+            int playerY = player.getWorldLocation().getY();
             int objectX = event.getGameObject().getWorldLocation().getX();
             int objectY = event.getGameObject().getWorldLocation().getY();
 
@@ -242,7 +253,11 @@ public class VMPlugin extends Plugin
 
     private boolean isInVM()
     {
-        return WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == VM_REGION_NORTH ||
-                WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == VM_REGION_SOUTH;
+		final Player player = client.getLocalPlayer();
+		if (player == null)
+		{
+			return false;
+		}
+        return VM_REGIONS.contains(WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID());
     }
 }
